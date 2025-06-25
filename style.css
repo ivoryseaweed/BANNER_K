@@ -4,19 +4,12 @@ body {
     padding: 20px;
 }
 
-.button-container button, .action-buttons button {
-    margin: 10px;
-    padding: 10px 20px;
-    font-size: 16px;
-}
-
-.upload-container {
+.upload-section, .button-section, .action-section {
     margin: 15px 0;
 }
 
-@media (max-width: 600px) {
-    .button-container button, .action-buttons button {
-        width: 90%;
-        margin: 5px auto;
-    }
+button {
+    margin: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
 }
