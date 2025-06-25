@@ -106,8 +106,8 @@ function getFormatConfig(format) {
             canvasHeight: 258,
             visualX: 260,
             visualY: 48,
-            visualWidth: 168, // 1:1
-            visualHeight: 168,
+            visualWidth: 163, // 1:1
+            visualHeight: 163,
             borderRadius: 20
         };
     } else if (format === 'mo2') {
