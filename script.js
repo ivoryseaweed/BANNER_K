@@ -6,13 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const exampleImageInput = document.getElementById('exampleImage');
     const visualImagesInput = document.getElementById('visualImages');
     const downloadBtn = document.getElementById('downloadBtn');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
 
     function updateDownloadButtonState() {
-        if (selectedFormat && exampleImage && visualImages.length > 0) {
-            downloadBtn.disabled = false;
-        } else {
-            downloadBtn.disabled = true;
-        }
+        const isReady = selectedFormat && exampleImage && visualImages.length > 0;
+        downloadBtn.disabled = !isReady;
+        console.log('Download button state:', isReady); // 디버깅
     }
 
     exampleImageInput.addEventListener('change', (e) => {
@@ -21,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const img = new Image();
             img.onload = () => {
                 exampleImage = img;
+                updateDownloadButtonState();
+            };
+            img.onerror = () => {
+                alert('예시 이미지 로딩 실패!');
+                exampleImage = null;
                 updateDownloadButtonState();
             };
             img.src = URL.createObjectURL(file);
@@ -41,21 +46,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     downloadBtn.addEventListener('click', () => {
-        if (!selectedFormat || !exampleImage || visualImages.length === 0) return;
+        if (!selectedFormat || !exampleImage || visualImages.length === 0) {
+            alert('이미지, 비주얼, 포맷을 모두 선택해주세요.');
+            return;
+        }
 
         const zip = new JSZip();
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-
         const config = getFormatConfig(selectedFormat);
 
+        canvas.width = config.canvasWidth;
+        canvas.height = config.canvasHeight;
+
         Promise.all(visualImages.map(file => {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.onload = () => {
-                    canvas.width = config.canvasWidth;
-                    canvas.height = config.canvasHeight;
-
                     // 배경
                     if (selectedFormat === 'mo2') {
                         ctx.fillStyle = '#fff';
@@ -76,8 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     if (selectedFormat === 'biz2' || selectedFormat === 'biz1') {
                         ctx.save();
-
-                        // 둥근 모서리 그리기 (ctx.arcTo 사용)
                         ctx.beginPath();
                         ctx.moveTo(x + radius, y);
                         ctx.arcTo(x + width, y, x + width, y + height, radius);
@@ -87,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         ctx.closePath();
                         ctx.clip();
 
-                        // 비율 유지 크롭
                         const ratio = Math.max(width / img.width, height / img.height);
                         const cropWidth = img.width * ratio;
                         const cropHeight = img.height * ratio;
@@ -97,8 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         ctx.drawImage(img, x + offsetX, y + offsetY, cropWidth, cropHeight);
                         ctx.restore();
                     } else {
-                        // 둥근 모서리 적용 안 함
-                        // 비율 유지 크롭
                         const ratio = Math.max(width / img.width, height / img.height);
                         const cropWidth = img.width * ratio;
                         const cropHeight = img.height * ratio;
@@ -112,15 +112,28 @@ document.addEventListener('DOMContentLoaded', () => {
                         const ext = selectedFormat === 'mo2' ? 'jpg' : 'png';
                         zip.file(file.name.replace(/\.[^/.]+$/, '') + `.${ext}`, blob);
                         resolve();
-                    }, selectedFormat === 'mo2' ? 'image/jpeg' : 'image/png');
+                    }, selectedFormat === 'mo2' ? 'image/jpeg' : 'image/png', 0.8); // JPEG 품질 설정
+                };
+                img.onerror = () => {
+                    reject(new Error(`비주얼 이미지 ${file.name} 로딩 실패!`));
                 };
                 img.src = URL.createObjectURL(file);
             });
         })).then(() => {
-            zip.generateAsync({ type: 'blob' }).then(content => {
-                // saveAs 함수 호출 방식 수정
-                window.saveAs(content, 'banners.zip');
+            console.log('ZIP 파일 생성 시작...'); // 디버깅
+            zip.generateAsync({ type: 'blob' })
+            .then(content => {
+                console.log('ZIP 파일 생성 완료:', content); // 디버깅
+                saveAs(content, 'banners.zip');
+            })
+            .catch(error => {
+                console.error('ZIP 파일 생성 실패:', error); // 디버깅
+                alert('ZIP 파일 생성 실패!');
             });
+        })
+        .catch(error => {
+            console.error('이미지 처리 중 오류 발생:', error); // 디버깅
+            alert(error.message);
         });
     });
 
@@ -129,6 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function getFormatConfig(format) {
+         // 둥근 모서리 값 조정 (biz2, biz1)
+        const borderRadius = 7;
+
         if (format === 'biz2') {
             return {
                 canvasWidth: 1029,
@@ -137,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 visualY: 36,
                 visualWidth: 315,
                 visualHeight: 186,
-                borderRadius: 5
+                borderRadius: borderRadius
             };
         } else if (format === 'biz1') {
             return {
@@ -145,9 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 canvasHeight: 258,
                 visualX: 260,
                 visualY: 48,
-                visualWidth: 163,
+                visualWidth: 163, // 1:1
                 visualHeight: 163,
-                borderRadius: 5
+                borderRadius: borderRadius
             };
         } else if (format === 'mo2') {
             return {
