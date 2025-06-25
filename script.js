@@ -118,7 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         })).then(() => {
             zip.generateAsync({ type: 'blob' }).then(content => {
-                saveAs(content, 'banners.zip');
+                // saveAs 함수 호출 방식 수정
+                window.saveAs(content, 'banners.zip');
             });
         });
     });
