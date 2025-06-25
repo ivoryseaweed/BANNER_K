@@ -106,6 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         })).then(() => {
             zip.generateAsync({ type: 'blob' }).then(content => {
+                // saveAs 함수가 window 객체에 없을 경우를 대비 (문제 해결)
+                if (typeof window.saveAs !== 'function') {
+                    window.saveAs = saveAs;
+                }
                 saveAs(content, 'banners.zip');
             });
         });
@@ -124,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 visualY: 36,
                 visualWidth: 315,
                 visualHeight: 186,
-                borderRadius: 15 // 둥근 모서리 값 조정
+                borderRadius: 7 // 둥근 모서리 값 조정
             };
         } else if (format === 'biz1') {
             return {
@@ -134,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 visualY: 48,
                 visualWidth: 163, // 1:1
                 visualHeight: 163,
-                borderRadius: 15 // 둥근 모서리 값 조정
+                borderRadius: 7 // 둥근 모서리 값 조정
             };
         } else if (format === 'mo2') {
             return {
