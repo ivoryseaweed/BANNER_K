@@ -98,7 +98,7 @@ function getFormatConfig(format) {
             visualY: 36,
             visualWidth: 315,
             visualHeight: 186,
-            borderRadius: 10
+            borderRadius: 20
         };
     } else if (format === 'biz1') {
         return {
@@ -108,7 +108,7 @@ function getFormatConfig(format) {
             visualY: 48,
             visualWidth: 163, // 1:1
             visualHeight: 163,
-            borderRadius: 10
+            borderRadius: 20
         };
     } else if (format === 'mo2') {
         return {
