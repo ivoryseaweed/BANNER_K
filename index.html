@@ -1,40 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="robots" content="noindex, nofollow">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>배너 합성 사이트</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 <body>
+    <h1>배너 합성 사이트</h1>
 
-<h1>배너 합성 사이트</h1>
+    <div class="upload-section">
+        <label>예시 배너 업로드:</label>
+        <input type="file" id="exampleImage" accept="image/*">
+    </div>
 
-<div class="button-container">
-    <button onclick="selectFormat('biz2')">Biz 2:1</button>
-    <button onclick="selectFormat('biz1')">Biz 1:1</button>
-    <button onclick="selectFormat('mo2')">Mo 2:1</button>
-</div>
+    <div class="upload-section">
+        <label>합성 비주얼 업로드 (여러개 가능):</label>
+        <input type="file" id="visualImages" accept="image/*" multiple>
+    </div>
 
-<div class="upload-container">
-    <label>예시 배너 업로드:</label>
-    <input type="file" id="exampleImage" accept="image/*">
-</div>
+    <div class="button-section">
+        <button onclick="selectFormat('biz2')">Biz 2:1</button>
+        <button onclick="selectFormat('biz1')">Biz 1:1</button>
+        <button onclick="selectFormat('mo2')">Mo 2:1</button>
+    </div>
 
-<div class="upload-container">
-    <label>합성 비주얼 업로드 (여러 개 가능):</label>
-    <input type="file" id="visualImages" accept="image/*" multiple>
-</div>
+    <div class="action-section">
+        <button id="downloadBtn" disabled>다운로드 (zip)</button>
+        <button id="resetBtn">초기화</button>
+    </div>
 
-<canvas id="canvas" style="display:none;"></canvas>
+    <canvas id="canvas" style="display:none;"></canvas>
 
-<div class="action-buttons">
-    <button id="downloadBtn" disabled>ZIP 다운로드</button>
-    <button id="resetBtn">초기화</button>
-</div>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
