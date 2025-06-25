@@ -3,32 +3,44 @@ document.addEventListener('DOMContentLoaded', () => {
     let exampleImage = null;
     let visualImages = [];
 
-    document.getElementById('exampleImage').addEventListener('change', (e) => {
+    const exampleImageInput = document.getElementById('exampleImage');
+    const visualImagesInput = document.getElementById('visualImages');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    function updateDownloadButtonState() {
+        if (selectedFormat && exampleImage && visualImages.length > 0) {
+            downloadBtn.disabled = false;
+        } else {
+            downloadBtn.disabled = true;
+        }
+    }
+
+    exampleImageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
             const img = new Image();
             img.onload = () => {
                 exampleImage = img;
+                updateDownloadButtonState();
             };
             img.src = URL.createObjectURL(file);
+        } else {
+            exampleImage = null;
+            updateDownloadButtonState();
         }
     });
 
-    document.getElementById('visualImages').addEventListener('change', (e) => {
+    visualImagesInput.addEventListener('change', (e) => {
         visualImages = Array.from(e.target.files);
-        if (selectedFormat && exampleImage && visualImages.length > 0) {
-            document.getElementById('downloadBtn').disabled = false;
-        }
+        updateDownloadButtonState();
     });
 
     function selectFormat(format) {
         selectedFormat = format;
-        if (exampleImage && visualImages.length > 0) {
-            document.getElementById('downloadBtn').disabled = false;
-        }
+        updateDownloadButtonState();
     }
 
-    document.getElementById('downloadBtn').addEventListener('click', () => {
+    downloadBtn.addEventListener('click', () => {
         if (!selectedFormat || !exampleImage || visualImages.length === 0) return;
 
         const zip = new JSZip();
@@ -106,10 +118,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         })).then(() => {
             zip.generateAsync({ type: 'blob' }).then(content => {
-                // saveAs 함수가 window 객체에 없을 경우를 대비 (문제 해결)
-                if (typeof window.saveAs !== 'function') {
-                    window.saveAs = saveAs;
-                }
                 saveAs(content, 'banners.zip');
             });
         });
@@ -128,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 visualY: 36,
                 visualWidth: 315,
                 visualHeight: 186,
-                borderRadius: 7 // 둥근 모서리 값 조정
+                borderRadius: 5
             };
         } else if (format === 'biz1') {
             return {
@@ -136,9 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 canvasHeight: 258,
                 visualX: 260,
                 visualY: 48,
-                visualWidth: 163, // 1:1
+                visualWidth: 163,
                 visualHeight: 163,
-                borderRadius: 7 // 둥근 모서리 값 조정
+                borderRadius: 5
             };
         } else if (format === 'mo2') {
             return {
