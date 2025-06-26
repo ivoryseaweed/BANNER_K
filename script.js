@@ -115,7 +115,7 @@ function getFormatConfig(format) {
             canvasWidth: 1200,
             canvasHeight: 600,
             visualX: 0,
-            visualY: 193,
+            visualY: 103,
             visualWidth: 1200,
             visualHeight: 497,
             borderRadius: 0
