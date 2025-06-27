@@ -8,6 +8,7 @@ document.getElementById('exampleImage').addEventListener('change', (e) => {
         const img = new Image();
         img.onload = () => {
             exampleImage = img;
+            checkReady();
         };
         img.src = URL.createObjectURL(file);
     }
@@ -15,16 +16,17 @@ document.getElementById('exampleImage').addEventListener('change', (e) => {
 
 document.getElementById('visualImages').addEventListener('change', (e) => {
     visualImages = Array.from(e.target.files);
-    if (selectedFormat && exampleImage && visualImages.length > 0) {
-        document.getElementById('downloadBtn').disabled = false;
-    }
+    checkReady();
 });
 
 function selectFormat(format) {
     selectedFormat = format;
-    if (exampleImage && visualImages.length > 0) {
-        document.getElementById('downloadBtn').disabled = false;
-    }
+    checkReady();
+}
+
+function checkReady() {
+    const ready = selectedFormat && exampleImage && visualImages.length > 0;
+    document.getElementById('downloadBtn').disabled = !ready;
 }
 
 document.getElementById('downloadBtn').addEventListener('click', () => {
@@ -106,7 +108,7 @@ function getFormatConfig(format) {
             canvasHeight: 258,
             visualX: 260,
             visualY: 44,
-            visualWidth: 170, // 1:1
+            visualWidth: 170,
             visualHeight: 170,
             borderRadius: 20
         };
